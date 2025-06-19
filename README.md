@@ -1,212 +1,206 @@
-# README - MALDI-GeoMx-Spatial-Transcriptomics Nitrogen Index calculation with IsotopeakeR
+# README - MALDI-GeoMx-Spatial-Transcriptomics Nitrogen Index Calculation with IsotopeakeR
 
-This repository implements two complementary spectral processing pipelines for MALDI imaging data:
+This repository implements a web-based Shiny application, **IsotopeakeR Beta**, for interactive preprocessing and isotopic analysis of MALDI mass spectrometry imaging (MSI) data, alongside a spectral processing pipeline for linear positive mode:
 
-- **Nitrogen Index RP** in reflector mode: processes raw spectra, applies SG smoothing, SNIP baseline correction, MAD- and valley-based peak detection, computes top-N peak metrics and ratios, then exports tables and overview plots.
-- **Nitrogen Index LP** in linear positive mode: extracts a targeted m/z region (amyloid Aβ₁₋₄₂), performs normalization, smoothing, ALS baseline correction, FWHM peak analysis, and exports annotated results.
+- **IsotopeakeR Web App**: A browser-based tool that allows users to upload raw spectra (.dat, .txt, .csv), apply preprocessing steps (subsetting, intensity transformation, Savitzky-Golay smoothing, SNIP baseline correction, TIC/RMSE normalization), detect peaks using MAD- and valley-based methods, visualize results with interactive `plotly` plots, and export peak data as CSV.
+- **Nitrogen Index LP** (Linear Positive Mode): Extracts a targeted m/z region (e.g., amyloid Aβ₁₋₄₂), performs normalization, smoothing, ALS baseline correction, FWHM peak analysis, and exports annotated results.
 
-Use the sections below to explore each workflow in detail.
+Use the sections below to explore the web application and the Nitrogen Index LP pipeline in detail.
+
+## Overview
 
 <details>
   
-<summary><strong> Nitrogen Index RP (Reflector mode in MALDI MSI) </strong></summary>
+<summary><strong> IsotopeakeR Beta </strong></summary>
 
 ---
+
+**IsotopeakeR Beta** is a Shiny web application designed for preprocessing and isotopic analysis of MALDI MSI data. It supports `.dat`, `.txt`, and `.csv` file formats, offering tools for spectral preprocessing, peak detection, interactive visualization, and data export. Deployed on a web server (e.g., Shiny Server or shinyapps.io), it provides a user-friendly interface accessible via a browser, eliminating the need for local R installation.
+
+**Author**: Maciej Dulewicz (maciej.dulewicz@gu.se)
+
+## Features
+
+- **Preprocessing**: Subset m/z ranges, apply sqrt/log intensity transformation, Savitzky-Golay smoothing, SNIP baseline correction, and TIC/RMSE normalization.
+- **Peak Detection**: Identify peaks within a specified m/z range using MAD-based filtering with customizable SNR, window size, and minimum distance.
+- **Visualization**: Interactive `plotly` plots for raw and processed spectra, with annotated peaks and integration boundaries.
+- **Export**: Download peak data as CSV for further analysis.
+- **Web Access**: Hosted on a server for browser-based usage, supporting file uploads up to 100 MB.
+
+## Installation and Deployment
+
+1. Access the app via the provided URL (e.g., `https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/`).
+
+## Usage Guide: IsotopeakeR Web Application
 
 ### Table of Contents
+1. [Accessing the Web Application](#accessing-the-web-application)
+2. [Preprocessing Panel Overview](#preprocessing-panel-overview)
+3. [Uploading Spectra Files](#uploading-spectra-files)
+4. [Configuring Preprocessing Options](#configuring-preprocessing-options)
+5. [Processing Spectra](#processing-spectra)
+6. [PeaksCatcher Panel Overview](#peakscatcher-panel-overview)
+7. [Peak Detection Settings](#peak-detection-settings)
+8. [Detecting and Analyzing Peaks](#detecting-and-analyzing-peaks)
+9. [Visualizing Results](#visualizing-results)
+10. [Exporting Peak Data](#exporting-peak-data)
 
-1. [Step 1: Parameter Setup](#step-1-parameter-setup)  
-2. [Step 2: Helper Functions](#step-2-helper-functions)  
-3. [Step 3: Single-File Processing](#step-3-single-file-processing)  
-4. [Step 4: Intensity Scaling](#step-4-intensity-scaling)  
-5. [Step 5: Smoothing & Baseline Removal](#step-5-smoothing--baseline-removal)  
-6. [Step 6: Peak Detection within ROI](#step-6-peak-detection-within-roi)  
-7. [Step 7: Peak Metrics Computation](#step-7-peak-metrics-computation)  
-8. [Step 8: Plot Generation](#step-8-plot-generation)  
-9. [Step 9: Aggregation & Ratio Calculation](#step-9-aggregation--ratio-calculation)  
-10. [Step 10: Export & Visualization Output](#step-10-export--visualization-output)  
+#### Accessing the Web Application
+- Open the app URL (e.g., `https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/`) in a browser (Chrome, Firefox, Edge).
+- No local R installation required; ensure a stable internet connection.
+- The interface loads with a sandstone theme, titled "IsotopeakeR Beta – Preprocessing & Isotopic Analysis."
+
+#### Preprocessing Panel Overview
+- **Purpose**: Upload, preprocess, and visualize raw mass spectrometry data from https://maciejdulewiczgu.shinyapps.io/MALDI_GEOMX_VOLCANO/.
+- **Components**:
+  - **Sidebar**: File upload controls, preprocessing settings, and action buttons.
+  - **Main Panel**: Interactive `plotly` spectrum preview and processing log.
+- **Navigation**: Switch between spectra using "Previous," "Next," or the "Select RAW Spectrum" dropdown.
+
+#### Uploading Spectra Files
+- **Formats**: `.dat`, `.txt` (space-separated), or `.csv` with m/z and intensity columns.
+- **Steps**:
+  1. Click "Select raw spectra files" in the sidebar.
+  2. Upload files (total size ≤ 100 MB).
+  3. Click "Load files"; a pop-up confirms the number of files loaded.
+  4. Clear uploaded spectra with "Clear spectra."
+- **Result**: Spectra names appear in the dropdown for selection.
+
+#### Configuring Preprocessing Options
+- **Subset m/z Range**:
+  - Enable "Process m/z sub-range?" to restrict processing.
+  - Set `m/z min` (default: 3500) and `m/z max` (default: 5500).
+- **Intensity Transformation**:
+  - Check "Transform Intensity?"; select `sqrt` (default), `log`, or `none`.
+- **Smoothing (Savitzky-Golay)**:
+  - Enable "Smooth (Savitzky-Golay)?".
+  - Set `Polynomial order` (default: 3) and `Window size` (default: 11, must exceed polynomial order).
+- **Baseline Correction (SNIP)**:
+  - Enable "Baseline Correction (SNIP)?".
+  - Set `SNIP Iterations` (default: 100).
+- **Normalization**:
+  - Select `none` (default), `TIC` (Total Ion Current), or `RMSE` (Root Mean Square Error).
+
+#### Processing Spectra
+- **Single Spectrum**:
+  1. Select a spectrum from the dropdown.
+  2. Configure preprocessing options.
+  3. Click "Process & Save (One)"; a pop-up shows the processed spectrum’s name (e.g., `original_proc_HHMMSS`).
+- **All Spectra**:
+  1. Set preprocessing options.
+  2. Click "Process ALL & Save"; a pop-up confirms the number of processed spectra.
+- **Reset**: Clear processed data with "Reset Processed Results."
+- **Preview**: The `plotly` plot updates dynamically to reflect preprocessing settings.
+
+#### PeaksCatcher Panel Overview
+- **Purpose**: Detect and analyze peaks in processed spectra within a specified m/z range.
+- **Components**:
+  - **Sidebar**: Spectra selection, peak detection parameters, and export button.
+  - **Main Panel**: Interactive `plotly` plot, peak summary table, spectra details, and statistical summary.
+- **Access**: Navigate to the "PeaksCatcher" tab after processing spectra.
+
+#### Peak Detection Settings
+- **Spectra Selection**: Select one or more processed spectra (multiple selections enabled).
+- **Search Range**:
+  - Set `m/z Start` (default: 4500) and `m/z End` (default: 4600).
+  - Optionally set `Manual Baseline` (default: 0) to subtract a constant intensity.
+- **Peak Detection Parameters**:
+  - `SNR` (default: 2): Signal-to-noise ratio threshold.
+  - `Half window size` (default: 20): Window for local maxima detection.
+  - `Min Distance (m/z)` (default: 0.8): Minimum m/z separation between peaks.
+  - `Max peaks` (default: 5): Maximum number of peaks to detect per spectrum.
+
+#### Detecting and Analyzing Peaks
+- **Action**: Click "Detect Peaks" to analyze selected spectra.
+- **Process**:
+  1. Subset spectra to the specified m/z range.
+  2. Apply manual baseline subtraction.
+  3. Detect peaks using MAD-based filtering (`my_detect_peaks()`).
+  4. Identify peak boundaries with valley-based method (`find_bounds_valley()`).
+  5. Compute metrics (AUC, centroid, FWHM) using `calc_auc()` and `calc_peak_params()`.
+- **Output**:
+  - **Peak Summary Table**: Peak details (spectrum, m/z, intensity, AUC, centroid, FWHM).
+  - **Spectra Summary Table**: Number of peaks detected per spectrum.
+  - **Stats Table**: Average and median m/z per spectrum.
+
+#### Visualizing Results
+- **Plot**:
+  - Interactive `plotly` plot displays spectra in the m/z range.
+  - Peaks marked with red dots, labeled with peak number and m/z.
+  - Green dotted lines show peak integration boundaries.
+  - Search range shaded in light blue.
+- **Interactivity**: Hover for peak details; zoom/pan with `plotly` controls.
+
+#### Exporting Peak Data
+- **Action**: Click "Export Peak Data (CSV)" to download peak summary.
+- **Output**: `.csv` file (e.g., `peak_data_YYYY-MM-DD.csv`) with spectrum name, peak number, m/z, intensity, range, AUC, centroid, and FWHM.
+- **Use Case**: Import into Excel or R for further analysis.
 
 ---
 
-#### Step 1: Parameter Setup  
-All tunable settings at top of **pipeline.R**:
-- **folder_in**, **file_pat** – input directory & file pattern  
-- **spec_min**, **spec_max** – spectrum ROI m/z bounds  
-- **peak_min**, **peak_max** – peak-detection ROI bounds  
-- **sgolay_p**, **sgolay_n** – SG filter order & window  
-- **snip_iter** – SNIP baseline iterations  
-- **SNR**, **halfWindow**, **minIntensity** – detection thresholds  
-- **intensity_transform** – `"sqrt"`  
-- **top_n** – how many peaks to keep  
-- **scaling** – `"RMSE"` or `"pct"`  
-- **ratio_from**, **ratio_to**, **ratio_basis** – peak numbers & basis  
-- **out_table**, **out_plots** – Excel & PNG filenames  
-
----
-
-#### Step 2: Helper Functions  
-- **load_file(path)** – read TXT/CSV, numeric mz & intensity  
-- **baseline_snip(y,it)** – iterative SNIP baseline  
-- **detect_peaks_mad(...)** – local maxima + MAD filter  
-- **detect_peaks_min_distance(...)** – min‐distance peak filter  
-- **find_bounds_valley(x,y,idx)** – valley boundaries  
-- **peak_metrics(x,y,L,R)** – AUC, centroid, FWHM  
-- **transform_intensity(df,method)** – none/√/log transform  
-
----
-
-#### Step 3: Single-File Processing  
-**process_single(path)**:
-1. Load & filter `[spec_min,spec_max]`  
-2. Transform intensity  
-3. Scale (RMSE or pct)  
-4. SG smoothing + SNIP baseline removal  
-5. Detect peaks in `[peak_min,peak_max]`, keep top_n  
-6. Compute peak metrics & build tibble  
-7. Return list(table, plot, spec)  
-
----
-
-#### Step 4: Intensity Scaling  
-- **RMSE**: divide by √mean(intensity²)  
-- **Pct**: normalize max(intensity)=100  
-
----
-
-#### Step 5: Smoothing & Baseline Removal  
-1. **Savitzky–Golay** (sgolay_p, sgolay_n)  
-2. **Subtract** SNIP baseline (snip_iter)  
-3. **Clamp** negatives to zero  
-
----
-
-#### Step 6: Peak Detection within ROI  
-- Subset to `[peak_min,peak_max]`  
-- `detect_peaks_min_distance()` with min_distance=0.5  
-- Keep up to **top_n** peaks  
-
----
-
-#### Step 7: Peak Metrics Computation  
-For each peak:
-- Boundaries via `find_bounds_valley()`  
-- AUC/centroid/FWHM via `peak_metrics()`  
-- Assemble file, peak#, mz, intensity, range, metrics  
-
----
-
-#### Step 8: Plot Generation  
-- `ggplot2` line plot of processed spectrum  
-- Highlight ROIs, annotate peaks `#1`, `#2`, …  
-- Title = filename  
-
----
-
-#### Step 9: Aggregation & Ratio Calculation  
-1. `list.files()` → `proc_list`  
-2. `bind_rows()` → `metrics_all`  
-3. `calc_peak_ratio_info()` → `ratio_table`  
-
----
-
-#### Step 10: Export & Visualization Output  
-- **Excel**: sheets “Peaks” & “Ratio” via `openxlsx` → `out_table`  
-- **PNG grid**: arrange all plots via `gridExtra` → `out_plots`  
-- Console message: n peaks in n spectra processed  
-
----
 </details>
 
 <details>
-<summary><strong> Nitrogen Index LP (Linear positive mode in MALDI MSI) </strong></summary>
-
----
+<summary><strong>Nitrogen Index LP (Linear Positive Mode in MALDI MSI)</strong></summary>
 
 ### Table of Contents
-
-1. [Step 1: Creation of Raw Mass Spectra](#step-1-creation-of-raw-mass-spectra)  
-2. [Step 2: Intensity Normalization](#step-2-intensity-normalization)  
-3. [Step 3: Spectral Smoothing](#step-3-spectral-smoothing)  
-4. [Step 4: Baseline Correction](#step-4-baseline-correction)  
-5. [Step 5: Data Saving](#step-5-data-saving)  
-6. [Step 6: Peak Analysis](#step-6-peak-analysis)  
-7. [Step 7: Visualization](#step-7-visualization)  
-8. [Step 8: Data Aggregation & Annotation](#step-8-data-aggregation--annotation)  
-9. [Step 9: Sorting & Final Preparation](#step-9-sorting--final-preparation)  
-10. [Step 10: Export of Results](#step-10-export-of-results)  
-
----
+1. [Creation of Raw Mass Spectra](#step-1-creation-of-raw-mass-spectra)
+2. [Intensity Normalization](#step-2-intensity-normalization)
+3. [Spectral Smoothing](#step-3-spectral-smoothing)
+4. [Baseline Correction](#step-4-baseline-correction)
+5. [Data Saving](#step-5-data-saving)
+6. [Peak Analysis](#step-6-peak-analysis)
+7. [Visualization](#step-7-visualization)
+8. [Data Aggregation & Annotation](#step-8-data-aggregation--annotation)
+9. [Sorting & Final Preparation](#step-9-sorting--final-preparation)
+10. [Export of Results](#step-10-export-of-results)
 
 #### Step 1: Creation of Raw Mass Spectra
-
-Raw mass spectra were generated by reading each input data file and extracting the signal around a targeted *m/z* value corresponding to amyloid Aβ₁₋₄₂. A ±25 *m/z* tolerance window was applied to isolate the region of interest before further processing.
-
----
+Raw mass spectra are generated by reading input files and extracting the signal around a targeted m/z value (e.g., amyloid Aβ₁₋₄₂) with a ±25 m/z tolerance window.
 
 #### Step 2: Intensity Normalization
+Spectra are scaled to percentage of maximum intensity (100% normalization) to ensure comparability across acquisitions.
 
-Each spectrum’s intensity trace was scaled to percentage of its own maximum intensity. This “100% normalization” ensures comparability across spectra by compensating for absolute intensity differences between acquisitions.
+#### Step 3: Spectral Smoothing
+Apply **Savitzky-Golay filter** with:
+- Polynomial order.
+- Window size.
+This reduces noise while preserving peak shapes.
 
----
-
-#### Step 3: Spectral Smoothing  
-
-To reduce noise while preserving peak shapes, a **Savitzky–Golay filter** was applied with:  
-- Polynomial order 
-- Window size  
-
-This smoothing step enhances subsequent peak detection performance.
-
----
-
-#### Step 4: Baseline Correction 
-
-Smoothed spectra were corrected for low‐frequency background using the **Asymmetric Least Squares (ALS)** algorithm with:  
-- Smoothing parameter (λ)
-- Asymmetry parameter (p)  
-- Maximum iterations  
-
-Baseline drift is thereby removed, improving accuracy of peak quantification.
-
----
+#### Step 4: Baseline Correction
+Use **Asymmetric Least Squares (ALS)** with:
+- Smoothing parameter (λ).
+- Asymmetry parameter (p).
+- Maximum iterations.
+Removes baseline drift for accurate peak quantification.
 
 #### Step 5: Data Saving
+Serialize baseline-corrected spectra to `.rds` files for efficient downstream analysis.
 
-Baseline-corrected spectra are serialized to `.rds` files. This allows you to resume downstream analyses without repeating the computationally intensive preprocessing steps.
+#### Step 6: Peak Analysis
+Perform automatic peak analysis to extract:
+- **Full Width at Half Maximum (FWHM)**: Measures peak broadness.
+Additional metrics can be included as needed.
 
----
+#### Step 7: Visualization
+Plot results in a grid layout for side-by-side comparison of peak shapes and heights across samples.
 
-#### Step 6: Peak Analysis  
-Automatic peak analysis is performed on each baseline-corrected spectrum to extract quantitative descriptors. In this pipeline we focus on:  
-- **Full Width at Half Maximum (FWHM)** — measures peak broadness.  
+#### Step 8: Data Aggregation & Annotation
+Concatenate peak tables into a single data frame, parsing file identifiers for metadata (e.g., model type, ROI).
 
-Additional metrics can be added as needed.
+#### Step 9: Sorting & Final Preparation
+Sort the dataset by numeric ROI identifier for biologically/spatially meaningful organization.
 
----
+#### Step 10: Export of Results
+Export the annotated dataset to an **Excel spreadsheet** for downstream analysis and sharing.
 
-#### Step 7: Visualization  
-
-Analysis results are plotted using a grid layout that arranges individual spectrum overlays side by side. This layout facilitates rapid visual comparison of peak shapes and heights across all samples.
-
----
-
-#### Step 8: Data Aggregation & Annotation  
-
-Individual peak tables are concatenated into a single data frame. Row names or file identifiers are parsed to extract metadata fields—specifically **model type** and **region of interest (ROI)**—which are added as separate columns for structured annotation.
-
----
-
-#### Step 9: Sorting & Final Preparation  
-
-The combined dataset is sorted by numeric ROI identifier. This ordering ensures that results are organized in biologically or spatially meaningful sequence prior to export.
-
----
-
-#### Step 10: Export of Results  
-
-The finalized, annotated dataset was exported to an **Excel spreadsheet** to facilitate downstream statistical analysis, reporting, and sharing with collaborators.
-
----
 </details>
 
+## Issues
+Report bugs or suggest features via the [GitHub Issues](https://github.com/yourusername/isotopeaker/issues) page.
 
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+For questions, contact Maciej Dulewicz at maciej.dulewicz@gu.se.
