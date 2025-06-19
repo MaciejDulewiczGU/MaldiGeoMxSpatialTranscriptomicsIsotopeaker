@@ -2,7 +2,7 @@
 
 This repository implements a web-based Shiny application, **IsotopeakeR Beta**, for interactive preprocessing and isotopic analysis of MALDI mass spectrometry imaging (MSI) data, alongside a spectral processing pipeline for linear positive mode:
 
-- **IsotopeakeR Web App**: A browser-based tool that allows users to upload raw spectra (.dat, .txt, .csv), apply preprocessing steps (subsetting, intensity transformation, Savitzky-Golay smoothing, SNIP baseline correction, TIC/RMSE normalization), detect peaks using MAD- and valley-based methods, visualize results with interactive `plotly` plots, and export peak data as CSV.
+- **IsotopeakeR Web App for Nitrogen Index RP**: A browser-based tool that allows users to upload raw spectra (.dat, .txt, .csv), apply preprocessing steps (subsetting, intensity transformation, Savitzky-Golay smoothing, SNIP baseline correction, TIC/RMSE normalization), detect peaks using MAD- and valley-based methods, visualize results with interactive `plotly` plots, and export peak data as CSV.
 - **Nitrogen Index LP** (Linear Positive Mode): Extracts a targeted m/z region (e.g., amyloid Aβ₁₋₄₂), performs normalization, smoothing, ALS baseline correction, FWHM peak analysis, and exports annotated results.
 
 Use the sections below to explore the web application and the Nitrogen Index LP pipeline in detail.
@@ -11,7 +11,7 @@ Use the sections below to explore the web application and the Nitrogen Index LP 
 
 <details>
   
-<summary><strong> IsotopeakeR Beta </strong></summary>
+<summary><strong> IsotopeakeR Beta for Nitrogen Index RP </strong></summary>
 
 ---
 
