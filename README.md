@@ -29,7 +29,7 @@ Use the sections below to explore the web application and the Nitrogen Index LP 
 
 ## Installation and Deployment
 
-1. Access the app via the provided URL (e.g., `https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/`).
+1. Access the app via the provided URL (e.g., https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/).
 
 ## Usage Guide: IsotopeakeR Web Application
 
@@ -46,7 +46,7 @@ Use the sections below to explore the web application and the Nitrogen Index LP 
 10. [Exporting Peak Data](#exporting-peak-data)
 
 #### Accessing the Web Application
-- Open the app URL (e.g., `https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/`) in a browser (Chrome, Firefox, Edge).
+- Open the app URL (e.g., https://maciejdulewiczgu.shinyapps.io/IsotopeakeR_Beta/) in a browser (Chrome, Firefox, Edge).
 - No local R installation required; ensure a stable internet connection.
 - The interface loads with a sandstone theme, titled "IsotopeakeR Beta – Preprocessing & Isotopic Analysis."
 
