@@ -140,14 +140,14 @@ smooth_spectra_sgolay <- function(spectra, polyOrder = 3, windowSize = 49) {
   }
   lapply(spectra_list, function(spectrum) {
     if (is.null(spectrum$mz) || is.null(spectrum$intensity)) {
-      warning("Widmo nie zawiera mz lub intensity. Zwracam bez zmian.")
+      warning("Spectrum does not contain mz or intensity. Returning unchanged.")
       return(spectrum)
     }
     mz <- spectrum$mz; intensity <- spectrum$intensity
     f <- filter_spectrum(mz, intensity)
     mz <- f$mz; intensity <- f$intensity; valid <- f$valid
     if (length(mz) < 3) {
-      warning("Za mało ważnych punktów (< 3). Zwracam bez zmian.")
+      warning("Too few valid points (< 3). Returning unchanged.")
       return(spectrum)
     }
     baseline <- switch(tolower(method),
@@ -155,11 +155,12 @@ smooth_spectra_sgolay <- function(spectra, polyOrder = 3, windowSize = 49) {
                          b_mat <- .als_baseline(matrix(intensity, nrow = 1), ...)
                          if (is.matrix(b_mat)) b_mat[1, ] else as.numeric(b_mat)
                        },
-                       stop("Nieznana metoda linii bazowej: ", method)
+                       stop("Unknown baseline method: ", method)
     )
     .remove_baseline(spectrum, baseline, valid = valid, clip_negative = clip_negative)
   })
 }
+
 
 .als_baseline <- function(y, lambda = 6, p = 0.05, maxit = 20, tol = 1e-6) {
   y <- as.matrix(y)
