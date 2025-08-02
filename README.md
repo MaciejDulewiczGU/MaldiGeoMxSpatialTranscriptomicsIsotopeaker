@@ -51,7 +51,7 @@ Use the sections below to explore the web application and the Nitrogen Index LP 
 - The interface loads with a sandstone theme, titled "IsotopeakeR Beta – Preprocessing & Isotopic Analysis."
 
 #### Preprocessing Panel Overview
-- **Purpose**: Upload, preprocess, and visualize raw mass spectrometry data from https://maciejdulewiczgu.shinyapps.io/MALDI_GEOMX_VOLCANO/.
+- **Purpose**: Upload, preprocess, and visualize raw mass spectrometry data from https://maciejdulewiczgu.shinyapps.io/MALDI_GEOMX_VOLCANO/ or from Zenodo.
 - **Components**:
   - **Sidebar**: File upload controls, preprocessing settings, and action buttons.
   - **Main Panel**: Interactive `plotly` spectrum preview and processing log.
