@@ -13,5 +13,8 @@
 
 
 # corrs_trans_df_AB_for_correlation_norm_Quant_10 = do.call(rbind, mapply(corrFunc, vars[,1], vars[,2], 
-
 #                                                                        MoreArgs=list(data=trans_df_AB_for_correlation_norm_Quant_10), SIMPLIFY=FALSE))
+
+# corrs_trans_df_AB_for_correlation_norm_Quant_18 = do.call(rbind, mapply(corrFunc, vars[,1], vars[,2], 
+#                                                                        MoreArgs=list(data=trans_df_AB_for_correlation_norm_Quant_18), SIMPLIFY=FALSE))
+
